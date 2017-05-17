@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.bahmni.batch.ReportGeneratorTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2017-03-23T15:10:47" hostname="INarjunk" time="0.082">
+  <properties/>
+  <testcase name="ensureThatEvaluatorReturnsAHtml" classname="org.bahmni.batch.ReportGeneratorTest" time="0.082"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
