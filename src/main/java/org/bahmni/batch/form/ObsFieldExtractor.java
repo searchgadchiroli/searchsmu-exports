@@ -1,5 +1,6 @@
 package org.bahmni.batch.form;
 
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.domain.Obs;
@@ -26,6 +27,7 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 		if(obsList.size()==0)
 			return row.toArray();
 
+		System.out.println("Found Obs list containing something for form "+form.getDisplayName());
 
 		Map<Concept,String> obsRow = new HashMap<>();
 		for(Obs obs: obsList){
@@ -38,7 +40,11 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 			row.add(obsList.get(0).getParentId());
 		}
 
-		row.add(obsList.get(0).getTreatmentNumber());
+		row.add(obsList.get(0).getPerson().getIdentifier());
+		row.add(obsList.get(0).getPerson().getName());
+		row.add(obsList.get(0).getPerson().getAge());
+		row.add(obsList.get(0).getPerson().getBirthDate());
+		row.add(obsList.get(0).getPerson().getGender());
 
 		for(Concept field: form.getFields()){
 			row.add(massageStringValue(obsRow.get(field)));

@@ -67,6 +67,7 @@ public class ObservationExportStep {
 
     private JdbcCursorItemReader<Map<String, Object>> obsReader() {
         String sql = freeMarkerEvaluator.evaluate("obsWithParentSql.ftl",form);
+        System.out.println(sql);
         JdbcCursorItemReader<Map<String, Object>> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
         reader.setSql(sql);
@@ -121,7 +122,11 @@ public class ObservationExportStep {
             sb.append("id_" + form.getParent().getDisplayName()).append(",");
         }
 
-        sb.append("regnum");
+        sb.append("Patient Identifier").append(",")
+        .append("Patient Name").append(",")
+        .append("Age").append(",")
+        .append("Birth Date").append(",")
+        .append("Gender");
         for (Concept field : form.getFields()) {
             sb.append(",");
             sb.append(field.getFormattedTitle());

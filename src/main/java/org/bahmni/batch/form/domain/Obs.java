@@ -1,28 +1,19 @@
 package org.bahmni.batch.form.domain;
 
 public class Obs {
-	private String treatmentNumber;
 	private Integer id;
 	private Integer parentId;
 	private Concept field;
 	private String value;
+	private Person person;
 
 	public Obs(){}
 
-	public Obs(String treatmentNumber, Integer id, Integer parentId, Concept field, String value) {
-		this.treatmentNumber = treatmentNumber;
+	public Obs(Integer id, Integer parentId, Concept field, String value) {
 		this.id = id;
 		this.parentId = parentId;
 		this.field = field;
 		this.value = value;
-	}
-
-	public String getTreatmentNumber() {
-		return treatmentNumber;
-	}
-
-	public void setTreatmentNumber(String treatmentNumber) {
-		this.treatmentNumber = treatmentNumber;
 	}
 
 	public Integer getId() {
@@ -58,4 +49,11 @@ public class Obs {
 	}
 
 
+	public Person getPerson() {
+		return person;
+	}
+
+	public void setPerson(Person person) {
+		this.person = person;
+	}
 }

@@ -16,7 +16,7 @@ apply plugin: 'spring-boot'
 group = 'org.bahmni.batch'
 version = '2.1.0'
 
-description = "Bahmni Batch for EndTB exports"
+description = "Bahmni Batch for searchsmu exports"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -47,7 +47,7 @@ jar {
 }
 
 ospackage {
-    packageName = 'bahmni-endtb-batch'
+    packageName = 'searchsmu-exports'
     release = System.getenv('GO_PIPELINE_COUNTER') ?: 1
     arch = NOARCH
     os = LINUX

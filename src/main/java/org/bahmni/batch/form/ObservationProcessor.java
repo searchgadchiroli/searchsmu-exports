@@ -4,6 +4,7 @@ import org.bahmni.batch.BatchUtils;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.domain.Obs;
+import org.bahmni.batch.form.domain.Person;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,7 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 
 	@Override
 	public List<Obs> process(Map<String,Object> obsRow) throws Exception {
+		System.out.println("Processing Observation");
 		List<Integer> allChildObsIds = new ArrayList<>();
 
 		if (form.getFormName().getIsSet() == 1) {
@@ -73,6 +75,9 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 				Obs obs = super.mapRow(resultSet,i);
 				Concept concept = new Concept(resultSet.getInt("conceptId"),resultSet.getString("conceptName"),0,"");
 				obs.setField(concept);
+				Person person = new Person(resultSet.getString("identifier"), resultSet.getString("name"), resultSet.getDate("birthDate"),
+						resultSet.getInt("age"), resultSet.getString("gender"));
+				obs.setPerson(person);
 				return obs;
 			}
 		});
