@@ -6,6 +6,7 @@ public class Obs {
 	private Concept field;
 	private String value;
 	private Person person;
+	private Integer visit_id;
 
 	public Obs(){}
 
@@ -55,5 +56,13 @@ public class Obs {
 
 	public void setPerson(Person person) {
 		this.person = person;
+	}
+
+	public Integer getVisit_id() {
+		return visit_id;
+	}
+
+	public void setVisit_id(Integer visit_id) {
+		this.visit_id = visit_id;
 	}
 }

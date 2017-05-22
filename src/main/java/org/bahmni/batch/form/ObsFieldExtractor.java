@@ -45,6 +45,7 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 		row.add(obsList.get(0).getPerson().getAge());
 		row.add(obsList.get(0).getPerson().getBirthDate());
 		row.add(obsList.get(0).getPerson().getGender());
+		row.add(obsList.get(0).getVisit_id());
 
 		for(Concept field: form.getFields()){
 			row.add(massageStringValue(obsRow.get(field)));

@@ -126,7 +126,8 @@ public class ObservationExportStep {
         .append("Patient Name").append(",")
         .append("Age").append(",")
         .append("Birth Date").append(",")
-        .append("Gender");
+        .append("Gender").append(",")
+        .append("visit_id");
         for (Concept field : form.getFields()) {
             sb.append(",");
             sb.append(field.getFormattedTitle());
