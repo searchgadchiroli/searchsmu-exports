@@ -3,11 +3,7 @@ package org.bahmni.batch;
 import freemarker.template.TemplateExceptionHandler;
 import org.apache.commons.io.FileUtils;
 import org.bahmni.batch.exception.BatchResourceException;
-import org.bahmni.batch.exports.MetaDataCodeDictionaryExportStep;
-import org.bahmni.batch.exports.NonTBDrugOrderBaseExportStep;
-import org.bahmni.batch.exports.ObservationExportStep;
-import org.bahmni.batch.exports.TBDrugOrderBaseExportStep;
-import org.bahmni.batch.exports.TreatmentRegistrationBaseExportStep;
+import org.bahmni.batch.exports.*;
 import org.bahmni.batch.form.FormListProcessor;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.springframework.batch.core.Job;
@@ -54,6 +50,9 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	@Autowired
 	private ObjectFactory<ObservationExportStep> observationExportStepFactory;
 
+	@Autowired
+	private ObjectFactory<WideFormatObservationExportStep> wideFormatObservationExportStepFactory;
+
 	@Value("${templates}")
 	private Resource freemarkerTemplateLocation;
 
@@ -88,9 +87,9 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 		                .flow(treatmentRegistrationBaseExportStep.getStep());
 
 		for (BahmniForm form : forms) {
-				ObservationExportStep observationExportStep = observationExportStepFactory.getObject();
-				observationExportStep.setForm(form);
-				completeDataExport.next(observationExportStep.getStep());
+				WideFormatObservationExportStep wideFormatObservationExportStep = wideFormatObservationExportStepFactory.getObject();
+				wideFormatObservationExportStep.setForm(form);
+				completeDataExport.next(wideFormatObservationExportStep.getStep());
 		}
 
 		return completeDataExport.end().build();

@@ -4,15 +4,18 @@ import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.domain.Obs;
+import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
+public class ObsFieldExtractor implements FieldExtractor<List<Obs>>, FlatFileHeaderCallback{
 
 	private BahmniForm form;
 
@@ -31,7 +34,11 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 
 		Map<Concept,String> obsRow = new HashMap<>();
 		for(Obs obs: obsList){
-			obsRow.put(obs.getField(),obs.getValue());
+			if(obsRow.containsKey(obs.getField())){
+				obsRow.put(obs.getField(),obsRow.get(obs.getField())+";"+obs.getValue());
+			}else {
+				obsRow.put(obs.getField(), obs.getValue());
+			}
 		}
 
 		row.add(obsList.get(0).getId());
@@ -59,4 +66,31 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>{
 			return text;
 		return text.replaceAll("\n"," ").replaceAll("\t"," ").replaceAll(","," ");
 	}
+
+	@Override
+	public void writeHeader(Writer writer) throws IOException {
+		writer.write(getHeader());
+	}
+
+	private String getHeader() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("id_" + form.getDisplayName()).append(",");
+		if (form.getParent() != null) {
+			sb.append("id_" + form.getParent().getDisplayName()).append(",");
+		}
+
+		sb.append("Patient Identifier").append(",")
+				.append("Patient Name").append(",")
+				.append("Age").append(",")
+				.append("Birth Date").append(",")
+				.append("Gender").append(",")
+				.append("visit_id");
+		for (Concept field : form.getFields()) {
+			sb.append(",");
+			sb.append(field.getFormattedTitle());
+		}
+		return sb.toString();
+	}
+
 }

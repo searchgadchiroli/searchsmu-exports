@@ -1,16 +1,19 @@
 package org.bahmni.batch.exports;
 
 import org.bahmni.batch.exception.BatchResourceException;
+import org.bahmni.batch.form.LeafObservationProcessor;
 import org.bahmni.batch.form.ObsFieldExtractor;
 import org.bahmni.batch.form.ObservationProcessor;
+import org.bahmni.batch.form.PatientFieldExtractor;
 import org.bahmni.batch.form.domain.BahmniForm;
-import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.domain.Obs;
+import org.bahmni.batch.form.domain.Patient;
+import org.bahmni.batch.form.domain.Person;
 import org.bahmni.batch.helper.FreeMarkerEvaluator;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
-import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.support.CompositeItemProcessor;
@@ -20,18 +23,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Component
 @Scope(value = "prototype")
-public class ObservationExportStep {
+public class WideFormatObservationExportStep {
 
     public static final String FILE_NAME_EXTENSION = ".csv";
 
@@ -52,43 +59,65 @@ public class ObservationExportStep {
     @Autowired
     private ObjectFactory<ObservationProcessor> observationProcessorFactory;
 
+    @Autowired
+    private ObjectFactory<LeafObservationProcessor> leafObservationProcessorObjectFactory;
+
     public void setOutputFolder(Resource outputFolder) {
         this.outputFolder = outputFolder;
     }
 
     public Step getStep() {
         return stepBuilderFactory.get(getStepName())
-                .<Map<String, Object>, List<Obs>>chunk(100)
+                .<Patient, Patient>chunk(100)
                 .reader(obsReader())
                 .processor(observationProcessor())
                 .writer(obsWriter())
                 .build();
     }
 
-    private JdbcCursorItemReader<Map<String, Object>> obsReader() {
-        String sql = freeMarkerEvaluator.evaluate("obsWithParentSql.ftl",form);
+    private JdbcCursorItemReader<Patient> obsReader() {
+        String sql = freeMarkerEvaluator.evaluate("patientsWithFormFilled.ftl",form);
         System.out.println(sql);
-        JdbcCursorItemReader<Map<String, Object>> reader = new JdbcCursorItemReader<>();
+        JdbcCursorItemReader<Patient> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
         reader.setSql(sql);
-        reader.setRowMapper(new ColumnMapRowMapper());
+        reader.setRowMapper(new BeanPropertyRowMapper<Patient>(Patient.class){
+            public Patient mapRow(ResultSet rs, int i) throws SQLException {
+                Patient patient = super.mapRow(rs,i);
+                Person person = new Person();
+                person.setIdentifier(rs.getString("person_id"));
+                patient.setPerson(person);
+                return patient;
+            }
+        });
         return reader;
     }
 
-    private ObservationProcessor observationProcessor() {
-        ObservationProcessor observationProcessor = observationProcessorFactory.getObject();
-        observationProcessor.setForm(form);
-        return observationProcessor;
+    private CompositeItemProcessor observationProcessor() {
+        CompositeItemProcessor<Map<String, Object>, List<Patient>> compositeProcessor = new CompositeItemProcessor<>();
+        List itemProcessors = new ArrayList<>();
+
+//        ObservationProcessor observationProcessor = observationProcessorFactory.getObject();
+//        observationProcessor.setForm(form);
+//        itemProcessors.add(observationProcessor);
+
+        LeafObservationProcessor leafObservationProcessor = leafObservationProcessorObjectFactory.getObject();
+        leafObservationProcessor.setForm(form);
+        itemProcessors.add(leafObservationProcessor);
+
+        compositeProcessor.setDelegates(itemProcessors);
+
+        return compositeProcessor;
     }
 
-    private FlatFileItemWriter<List<Obs>> obsWriter() {
+    private FlatFileItemWriter<Patient> obsWriter() {
 
-        FlatFileItemWriter<List<Obs>> writer = new FlatFileItemWriter<>();
+        FlatFileItemWriter<Patient> writer = new FlatFileItemWriter<>();
         writer.setResource(new FileSystemResource(getOutputFile()));
 
-        DelimitedLineAggregator delimitedLineAggregator = new DelimitedLineAggregator();
+        DelimitedLineAggregator<Patient> delimitedLineAggregator = new DelimitedLineAggregator<>();
         delimitedLineAggregator.setDelimiter(",");
-        ObsFieldExtractor fieldExtractor = new ObsFieldExtractor(form);
+        PatientFieldExtractor fieldExtractor = new PatientFieldExtractor(form);
         delimitedLineAggregator.setFieldExtractor(fieldExtractor);
 
         writer.setLineAggregator(delimitedLineAggregator);
