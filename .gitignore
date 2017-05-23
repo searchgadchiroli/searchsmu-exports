@@ -1,0 +1,7 @@
+/build/*
+.gradle/*
+.idea/*
+classes/*
+temp/*
+temp2/*
+temp3/*
