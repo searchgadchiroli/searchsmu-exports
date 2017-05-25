@@ -30,7 +30,7 @@ public class BahmniFormFactory {
 		bahmniForm.setFormName(concept);
 		bahmniForm.setDepthToParent(depth);
 		bahmniForm.setParent(parentForm);
-
+		bahmniForm.setTotalVisitsFilledIn(obsService.getTotalVisitsConceptFilledIn(concept));
 		constructFormFields(concept, bahmniForm, 0);
 
 		return bahmniForm;

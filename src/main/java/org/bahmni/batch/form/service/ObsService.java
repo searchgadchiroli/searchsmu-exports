@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class ObsService {
@@ -25,6 +28,12 @@ public class ObsService {
 	private String conceptDetailsSql;
 
 	private String conceptListSql;
+
+	private String visitsWithFormFilledSql;
+
+	@Value("classpath:sql/visitsWithFormFilled.sql")
+	private Resource visitWithFormsFilledSqlResource;
+
 
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
@@ -44,10 +53,19 @@ public class ObsService {
 
 	}
 
+	public Long getTotalVisitsConceptFilledIn(Concept concept) {
+		Map<String,Integer> params = new HashMap<>();
+		params.put("form_concept_id",concept.getId());
+		Object max_visit_count = jdbcTemplate.query(visitsWithFormFilledSql, params, new ColumnMapRowMapper()).get(0).get("max_visit_count");
+		return max_visit_count == null ? 0 : (Long)max_visit_count;
+	}
+
+
 	@PostConstruct
 	public void postConstruct(){
 		this.conceptDetailsSql = BatchUtils.convertResourceOutputToString(conceptDetailsSqlResource);
 		this.conceptListSql = BatchUtils.convertResourceOutputToString(conceptListSqlResource);
+		this.visitsWithFormFilledSql = BatchUtils.convertResourceOutputToString(visitWithFormsFilledSqlResource);
 	}
 
 

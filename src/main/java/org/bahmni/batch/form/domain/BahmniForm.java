@@ -15,6 +15,8 @@ public class BahmniForm {
 
 	private int depthToParent;
 
+	private Long totalVisitsFilledIn;
+
 	public List<BahmniForm> getChildren() {
 		return children;
 	}
@@ -61,4 +63,11 @@ public class BahmniForm {
 		return formName.getName().replaceAll("\\s", "_").replaceAll(",","").replaceAll("/","").toLowerCase() ;
 	}
 
+    public Long getTotalVisitsFilledIn() {
+        return totalVisitsFilledIn;
+    }
+
+    public void setTotalVisitsFilledIn(Long totalVisitsFilledIn) {
+        this.totalVisitsFilledIn = totalVisitsFilledIn;
+    }
 }

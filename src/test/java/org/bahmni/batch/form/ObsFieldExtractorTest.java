@@ -23,8 +23,8 @@ public class ObsFieldExtractorTest {
 		ObsFieldExtractor fieldExtractor = new ObsFieldExtractor(form);
 
 		List<Obs> obsList = new ArrayList<>();
-		obsList.add(new Obs("AB1234",1,0, new Concept(1,"Systolic",0),"120"));
-		obsList.add(new Obs("AB1234",1,0, new Concept(2,"Diastolic",0),"80"));
+		obsList.add(new Obs(1,0, new Concept(1,"Systolic",0),"120"));
+		obsList.add(new Obs(1,0, new Concept(2,"Diastolic",0),"80"));
 
 		List<Object> result = Arrays.asList(fieldExtractor.extract(obsList));
 
@@ -44,7 +44,7 @@ public class ObsFieldExtractorTest {
 		ObsFieldExtractor fieldExtractor = new ObsFieldExtractor(form);
 
 		List<Obs> obsList = new ArrayList<>();
-		obsList.add(new Obs("AB1234",1,0, new Concept(1,"Systolic",0),"abc\ndef\tghi,klm"));
+		obsList.add(new Obs(1,0, new Concept(1,"Systolic",0),"abc\ndef\tghi,klm"));
 
 		Object[] result = fieldExtractor.extract(obsList);
 

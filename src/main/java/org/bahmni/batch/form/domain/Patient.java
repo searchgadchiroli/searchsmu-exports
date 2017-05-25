@@ -1,12 +1,15 @@
 package org.bahmni.batch.form.domain;
 
+import java.util.List;
+
 public class Patient {
 
-    private String obs_id;
-    private String person_id;
+    private Integer obs_id;
+    private Integer person_id;
     private Person person;
     private String visit_id;
     private String encounter_id;
+    private List<FormFilledForPatient> formsFilled;
 
 
     public Person getPerson() {
@@ -17,11 +20,11 @@ public class Patient {
         this.person = person;
     }
 
-    public String getPerson_id() {
+    public Integer getPerson_id() {
         return person_id;
     }
 
-    public void setPerson_id(String person_id) {
+    public void setPerson_id(Integer person_id) {
         this.person_id = person_id;
     }
 
@@ -41,11 +44,19 @@ public class Patient {
         this.encounter_id = encounter_id;
     }
 
-    public String getObs_id() {
+    public Integer getObs_id() {
         return obs_id;
     }
 
-    public void setObs_id(String obs_id) {
+    public void setObs_id(Integer obs_id) {
         this.obs_id = obs_id;
+    }
+
+    public List<FormFilledForPatient> getFormsFilled() {
+        return formsFilled;
+    }
+
+    public void setFormsFilled(List<FormFilledForPatient> formsFilled) {
+        this.formsFilled = formsFilled;
     }
 }

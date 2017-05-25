@@ -44,9 +44,9 @@ public class ObservationProcessorTest {
 		form.setFormName(new Concept(1,"formName",0));
 
 		obsList = new ArrayList<>();
-		obsList.add(new Obs("treatment1",1,null,new Concept(1,"systolic",0),"120"));
-		obsList.add(new Obs("treatment1",1,null,new Concept(1,"diastolic",0),"80"));
-		obsList.add(new Obs("treatment1",1,null,new Concept(1,"abcd",0),"180"));
+		obsList.add(new Obs(1,null,new Concept(1,"systolic",0),"120"));
+		obsList.add(new Obs(1,null,new Concept(1,"diastolic",0),"80"));
+		obsList.add(new Obs(1,null,new Concept(1,"abcd",0),"180"));
 
 	}
 
