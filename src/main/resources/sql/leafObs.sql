@@ -1,4 +1,5 @@
 select
+  person.person_id,
   pid.identifier as identifier,
   concat(pn.given_name, ' ', pn.family_name) name,
   person.birthdate as birthDate,

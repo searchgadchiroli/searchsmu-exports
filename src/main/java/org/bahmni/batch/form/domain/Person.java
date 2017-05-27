@@ -3,7 +3,7 @@ package org.bahmni.batch.form.domain;
 import java.util.Date;
 
 public class Person {
-    private String identifier;
+    private Integer id;
     private String name;
     private Date birthDate;
     private Integer age;
@@ -13,20 +13,20 @@ public class Person {
 
     }
 
-    public Person(String identifier, String name, Date birthDate, Integer age, String gender) {
-        this.identifier = identifier;
+    public Person(Integer id, String name, Date birthDate, Integer age, String gender) {
+        this.id = id;
         this.name = name;
         this.birthDate = birthDate;
         this.age = age;
         this.gender = gender;
     }
 
-    public String getIdentifier() {
-        return identifier;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {

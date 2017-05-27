@@ -2,17 +2,14 @@ package org.bahmni.batch.exports;
 
 import org.bahmni.batch.exception.BatchResourceException;
 import org.bahmni.batch.form.LeafObservationProcessor;
-import org.bahmni.batch.form.ObsFieldExtractor;
 import org.bahmni.batch.form.ObservationProcessor;
 import org.bahmni.batch.form.PatientFieldExtractor;
 import org.bahmni.batch.form.domain.BahmniForm;
-import org.bahmni.batch.form.domain.Obs;
 import org.bahmni.batch.form.domain.Patient;
 import org.bahmni.batch.form.domain.Person;
 import org.bahmni.batch.helper.FreeMarkerEvaluator;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
@@ -24,7 +21,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -84,8 +80,7 @@ public class WideFormatObservationExportStep {
         reader.setRowMapper(new BeanPropertyRowMapper<Patient>(Patient.class){
             public Patient mapRow(ResultSet rs, int i) throws SQLException {
                 Patient patient = super.mapRow(rs,i);
-                Person person = new Person();
-                person.setIdentifier(rs.getString("person_id"));
+                Person person = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthDate"), rs.getInt("age"), rs.getString("gender"));
                 patient.setPerson(person);
                 return patient;
             }
@@ -96,10 +91,6 @@ public class WideFormatObservationExportStep {
     private CompositeItemProcessor observationProcessor() {
         CompositeItemProcessor<Map<String, Object>, List<Patient>> compositeProcessor = new CompositeItemProcessor<>();
         List itemProcessors = new ArrayList<>();
-
-//        ObservationProcessor observationProcessor = observationProcessorFactory.getObject();
-//        observationProcessor.setForm(form);
-//        itemProcessors.add(observationProcessor);
 
         LeafObservationProcessor leafObservationProcessor = leafObservationProcessorObjectFactory.getObject();
         leafObservationProcessor.setForm(form);

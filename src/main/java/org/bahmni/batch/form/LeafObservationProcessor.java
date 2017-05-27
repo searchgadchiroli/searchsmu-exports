@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Component
@@ -49,7 +46,7 @@ public class LeafObservationProcessor implements ItemProcessor<Patient, Patient>
 
 	@Override
 	public Patient process(Patient patient) throws Exception {
-		System.out.println("Processing patient "+patient.getPerson().getIdentifier()+"for form"+form.getDisplayName());
+		System.out.println("Processing patient "+patient.getPerson().getId()+"for form"+form.getDisplayName());
 		updatePatientWithFormsFilled(patient);
 		return patient;
 	}
@@ -57,7 +54,7 @@ public class LeafObservationProcessor implements ItemProcessor<Patient, Patient>
     private void updatePatientWithFormsFilled(Patient patient) throws Exception {
         Map<String,Integer> params = new HashMap<>();
         params.put("form_concept_id",form.getFormName().getId());
-        params.put("person_id", patient.getPerson_id());
+        params.put("person_id", patient.getPerson().getId());
 
         List<FormFilledForPatient> formsFilledForPatient = jdbcTemplate.query(formsFilledForPatientSql, params, new BeanPropertyRowMapper<>(FormFilledForPatient.class));
         formsFilledForPatient = pickLatestFormInEveryVisit(formsFilledForPatient);

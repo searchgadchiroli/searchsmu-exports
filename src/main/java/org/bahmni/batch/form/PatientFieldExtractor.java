@@ -27,8 +27,12 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		List<Object> row = new ArrayList<>();
 
 
-		System.out.println("Writing patient"+patient.getPerson().getIdentifier());
-		row.add(patient.getPerson().getIdentifier());
+		System.out.println("Writing patient"+patient.getPerson().getId());
+		row.add(patient.getIdentifier());
+		row.add(patient.getPerson().getName());
+		row.add(patient.getPerson().getAge());
+		row.add(patient.getPerson().getBirthDate());
+		row.add(patient.getPerson().getGender());
 
 
 		int visit_number = 0;
@@ -90,7 +94,11 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
         }
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("Patient");
+		sb.append("Patient Identifier");
+		sb.append(",").append("Patient Name");
+		sb.append(",").append("Patient Age");
+		sb.append(",").append("Patient Birth date");
+		sb.append(",").append("Patient Gender");
         for (int i = 0; i < form.getTotalVisitsFilledIn(); i++) {
             sb.append(",").append("visit_no");
             sb.append(",").append("visit_date");

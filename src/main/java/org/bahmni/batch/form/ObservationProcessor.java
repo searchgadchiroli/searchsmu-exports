@@ -75,9 +75,9 @@ public class ObservationProcessor implements ItemProcessor<Map<String,Object>, L
 				Obs obs = super.mapRow(resultSet,i);
 				Concept concept = new Concept(resultSet.getInt("conceptId"),resultSet.getString("conceptName"),0,"");
 				obs.setField(concept);
-				Person person = new Person(resultSet.getString("identifier"), resultSet.getString("name"), resultSet.getDate("birthDate"),
-						resultSet.getInt("age"), resultSet.getString("gender"));
-				obs.setPerson(person);
+//				Person person = new Person(resultSet.getString("identifier"), resultSet.getString("name"), resultSet.getDate("birthDate"),
+//						resultSet.getInt("age"), resultSet.getString("gender"));
+//				obs.setPerson(person);
 				return obs;
 			}
 		});

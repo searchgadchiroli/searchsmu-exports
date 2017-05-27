@@ -1,6 +1,5 @@
 package org.bahmni.batch.form;
 
-import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.domain.Obs;
@@ -47,7 +46,7 @@ public class ObsFieldExtractor implements FieldExtractor<List<Obs>>, FlatFileHea
 			row.add(obsList.get(0).getParentId());
 		}
 
-		row.add(obsList.get(0).getPerson().getIdentifier());
+		row.add(obsList.get(0).getPerson().getId());
 		row.add(obsList.get(0).getPerson().getName());
 		row.add(obsList.get(0).getPerson().getAge());
 		row.add(obsList.get(0).getPerson().getBirthDate());
