@@ -1,11 +1,15 @@
 package org.bahmni.batch.form.domain;
 
+import java.util.List;
+
 public class Concept {
 	private Integer id;
 	private String name;
 	private Integer isSet;
 	private String title;
 	private Concept parent;
+	private boolean isCoded;
+	private List<Concept> answers;
 
 	public Concept(){}
 
@@ -99,5 +103,21 @@ public class Concept {
 		result = 31 * result + (name != null ? name.hashCode() : 0);
 		result = 31 * result + (isSet != null ? isSet.hashCode() : 0);
 		return result;
+	}
+
+	public boolean isCoded() {
+		return isCoded;
+	}
+
+	public void setCoded(boolean coded) {
+		isCoded = coded;
+	}
+
+	public List<Concept> getAnswers() {
+		return answers;
+	}
+
+	public void setAnswers(List<Concept> answers) {
+		this.answers = answers;
 	}
 }

@@ -25,11 +25,16 @@ public class ObsService {
 	@Value("classpath:sql/conceptList.sql")
 	private Resource conceptListSqlResource;
 
+	@Value("classpath:sql/conceptAnswers.sql")
+	private Resource conceptAnswersSqlResource;
+
 	private String conceptDetailsSql;
 
 	private String conceptListSql;
 
 	private String visitsWithFormFilledSql;
+
+	private String conceptAnswersSql;
 
 	@Value("classpath:sql/visitsWithFormFilled.sql")
 	private Resource visitWithFormsFilledSqlResource;
@@ -53,6 +58,14 @@ public class ObsService {
 
 	}
 
+	public List<Concept> getAnswerConcepts(Integer questionConceptId){
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("questionConceptId",questionConceptId);
+
+		return jdbcTemplate.query(conceptAnswersSql, parameters, new BeanPropertyRowMapper<>(Concept.class));
+
+	}
+
 	public Long getTotalVisitsConceptFilledIn(Concept concept) {
 		Map<String,Integer> params = new HashMap<>();
 		params.put("form_concept_id",concept.getId());
@@ -66,6 +79,7 @@ public class ObsService {
 		this.conceptDetailsSql = BatchUtils.convertResourceOutputToString(conceptDetailsSqlResource);
 		this.conceptListSql = BatchUtils.convertResourceOutputToString(conceptListSqlResource);
 		this.visitsWithFormFilledSql = BatchUtils.convertResourceOutputToString(visitWithFormsFilledSqlResource);
+		this.conceptAnswersSql = BatchUtils.convertResourceOutputToString(conceptAnswersSqlResource);
 	}
 
 

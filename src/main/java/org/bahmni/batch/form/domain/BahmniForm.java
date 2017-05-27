@@ -1,7 +1,11 @@
 package org.bahmni.batch.form.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+
+import java.util.*;
+
+import static org.apache.commons.collections.CollectionUtils.find;
 
 public class BahmniForm {
 
@@ -16,6 +20,7 @@ public class BahmniForm {
 	private int depthToParent;
 
 	private Long totalVisitsFilledIn;
+
 
 	public List<BahmniForm> getChildren() {
 		return children;
@@ -44,6 +49,16 @@ public class BahmniForm {
 	public List<Concept> getFields() {
 		return fields;
 	}
+
+	public Concept getField(final Integer id){
+	    Object object = find(fields, new Predicate() {
+            @Override
+            public boolean evaluate(Object object) {
+                return ((Concept) object).getId().equals(id);
+            }
+        });
+	    return object != null ? (Concept) object : null;
+    }
 
 	public void addField(Concept concept){
 		fields.add(concept);

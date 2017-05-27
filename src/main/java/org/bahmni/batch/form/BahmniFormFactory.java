@@ -49,7 +49,10 @@ public class BahmniFormFactory {
 			if(addMoreAndMultiSelectConcepts.contains(childConcept)){
 				bahmniForm.addChild(createForm(childConcept, bahmniForm, childDepth));
 			}else if(childConcept.getIsSet() == 0){
-				bahmniForm.addField(childConcept);
+                if(childConcept.isCoded()){
+                    childConcept.setAnswers(obsService.getAnswerConcepts(childConcept.getId()));
+                }
+                bahmniForm.addField(childConcept);
 			}else{
 				constructFormFields(childConcept,bahmniForm, childDepth);
 			}

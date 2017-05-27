@@ -26,58 +26,25 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 	public Object[] extract(Patient patient) {
 		List<Object> row = new ArrayList<>();
 
-//		if(patientList.size()==0)
-//			return row.toArray();
-
-//		System.out.println("Found Obs list containing something for form "+form.getDisplayName());
-
-//		Map<Concept,String> obsRow = new HashMap<>();
-//		for(Patient patient: patientList){
-//			if(obsRow.containsKey(patient.getField())){
-//				obsRow.put(patient.getField(),obsRow.get(patient.getField())+";"+patient.getValue());
-//			}else {
-//				obsRow.put(patient.getField(), patient.getValue());
-//			}
-//		}
-//
-//		row.add(patientList.get(0).getId());
-//
-//		if(form.getParent()!=null){
-//			row.add(patientList.get(0).getParentId());
-//		}
-//
-//		row.add(patientList.get(0).getPerson().getIdentifier());
-//		row.add(patientList.get(0).getPerson().getName());
-//		row.add(patientList.get(0).getPerson().getAge());
-//		row.add(patientList.get(0).getPerson().getBirthDate());
-//		row.add(patientList.get(0).getPerson().getGender());
-//		row.add(patientList.get(0).getVisit_id());
-//
-//		for(Concept field: form.getFields()){
-//			row.add(massageStringValue(obsRow.get(field)));
-//		}
 
 		System.out.println("Writing patient"+patient.getPerson().getIdentifier());
-//		row.add(patient.getObs_id());
 		row.add(patient.getPerson().getIdentifier());
-//		row.add(patient.getVisit_id());
-//		row.add(patient.getEncounter_id());
 
 
-        for (int i = 0; i < patient.getFormsFilled().size(); i++) {
-            row.add(i+1);
-            FormFilledForPatient formFilledForPatient = patient.getFormsFilled().get(i);
+		int visit_number = 0;
+        for (FormFilledForPatient formFilledForPatient: patient.getFormsFilled()) {
+            row.add(++visit_number);
             row.add(new SimpleDateFormat(DATE_FORMAT).format(formFilledForPatient.getVisit_date()));
-            Map<Concept,String> obsRow = new HashMap<>();
-            for(Obs obs: formFilledForPatient.getObs()){
-                if(obsRow.containsKey(obs.getField())){
-                    obsRow.put(obs.getField(),obsRow.get(obs.getField())+";"+obs.getValue());
+            Map<String,String> obsRow = new HashMap<>();
+            for (Concept field : form.getFields()){
+                if(field.isCoded()){
+                    //TODO explore optimising this by having the same objects in both form and obs
+                    for (Concept answer: field.getAnswers()) {
+                        row.add(isThisAnswerChosen(field, answer, formFilledForPatient.getObs()) ? "1" : "0");
+                    }
                 }else {
-                    obsRow.put(obs.getField(), obs.getValue());
+                    row.add(massageStringValue(getObsValue(field, formFilledForPatient.getObs())));
                 }
-            }
-            for(Concept field: form.getFields()){
-                row.add(massageStringValue(obsRow.get(field)));
             }
         }
 
@@ -85,7 +52,27 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
         return row.toArray();
 	}
 
-	private String massageStringValue(String text){
+    private boolean isThisAnswerChosen(Concept field, Concept answer, List<Obs> obsList) {
+	    //TODO scope for optimising CPU cycles
+	    for(Obs obs : obsList){
+	        if(obs.getField().equals(field)){
+	            if(answer.getId().equals(Integer.parseInt(obs.getValue()))) return true;
+            }
+        }
+        return false;
+    }
+
+    private String getObsValue(Concept field, List<Obs> obsList){
+        //TODO scope for optimising CPU cycles
+        for (Obs obs: obsList) {
+            if(obs.getField().equals(field)){
+                return obs.getValue();
+            }
+        }
+        return null;
+    }
+
+    private String massageStringValue(String text){
 		if(StringUtils.isEmpty(text))
 			return text;
 		return text.replaceAll("\n"," ").replaceAll("\t"," ").replaceAll(","," ");
@@ -103,35 +90,33 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
         }
 		StringBuilder sb = new StringBuilder();
 
-//		sb.append("id_" + form.getDisplayName()).append(",");
-//		if (form.getParent() != null) {
-//			sb.append("id_" + form.getParent().getDisplayName()).append(",");
-//		}
-
 		sb.append("Patient");
         for (int i = 0; i < form.getTotalVisitsFilledIn(); i++) {
             sb.append(",").append("visit_no");
             sb.append(",").append("visit_date");
             for (Concept field : form.getFields()) {
-                sb.append(",");
-                sb.append((i+1)+"_"+field.getFormattedTitle());
+                int visit_number = i + 1;
+                if(field.isCoded()){
+                    for (Concept answer: field.getAnswers()) {
+                        sb.append(",");
+                        sb.append(headerForCodedAnswer(visit_number, field, answer));
+                    }
+                }else {
+                    sb.append(",");
+                    sb.append(headerForNonCodedAsnwer(visit_number, field));
+                }
             }
 
         }
-//		.append("visit_id").append(",")
-//		.append("encounter_id");
-
-//		sb.append("Patient Identifier").append(",")
-//				.append("Patient Name").append(",")
-//				.append("Age").append(",")
-//				.append("Birth Date").append(",")
-//				.append("Gender").append(",")
-//				.append("visit_id");
-//		for (Concept field : form.getFields()) {
-//			sb.append(",");
-//			sb.append(field.getFormattedTitle());
-//		}
 		return sb.toString();
 	}
+
+    private String headerForNonCodedAsnwer(int visit_number, Concept field) {
+        return visit_number + "_" + field.getFormattedTitle();
+    }
+
+    private String headerForCodedAnswer(int visit_number, Concept field, Concept answer) {
+        return visit_number +"_"+field.getFormattedTitle()+"-"+answer.getFormattedTitle();
+    }
 
 }
