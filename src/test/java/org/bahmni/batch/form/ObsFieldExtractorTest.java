@@ -3,6 +3,7 @@ package org.bahmni.batch.form;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.bahmni.batch.form.domain.Concept;
 import org.bahmni.batch.form.domain.Obs;
+import org.bahmni.batch.form.domain.Person;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -23,13 +24,18 @@ public class ObsFieldExtractorTest {
 		ObsFieldExtractor fieldExtractor = new ObsFieldExtractor(form);
 
 		List<Obs> obsList = new ArrayList<>();
-		obsList.add(new Obs(1,0, new Concept(1,"Systolic",0),"120"));
-		obsList.add(new Obs(1,0, new Concept(2,"Diastolic",0),"80"));
+		Person person = new Person();
+		Obs systolic = new Obs(1, 0, new Concept(1, "Systolic", 0), "120");
+		systolic.setPerson(person);
+		obsList.add(systolic);
+		Obs diastolic = new Obs(1, 0, new Concept(2, "Diastolic", 0), "80");
+		diastolic.setPerson(person);
+		obsList.add(diastolic);
 
 		List<Object> result = Arrays.asList(fieldExtractor.extract(obsList));
 
 
-		assertEquals(4,result.size());
+		assertEquals(9,result.size());
 		assertTrue(result.contains("120"));
 		assertTrue(result.contains("80"));
 	}
@@ -44,13 +50,18 @@ public class ObsFieldExtractorTest {
 		ObsFieldExtractor fieldExtractor = new ObsFieldExtractor(form);
 
 		List<Obs> obsList = new ArrayList<>();
-		obsList.add(new Obs(1,0, new Concept(1,"Systolic",0),"abc\ndef\tghi,klm"));
+		Obs systolicObs = new Obs(1, 0, new Concept(1, "Systolic", 0), "abc\ndef\tghi,klm");
+		Person person = new Person();
+		systolicObs.setPerson(person);
+		obsList.add(systolicObs);
 
 		Object[] result = fieldExtractor.extract(obsList);
 
+		for (int i = 0; i < result.length; i++) {
+			System.out.println(result[i]);
+		}
 		assertEquals(new Integer(1),result[0]);
-		assertEquals("AB1234",result[1]);
-		assertEquals("abc def ghi klm",result[2]);
+		assertEquals("abc def ghi klm",result[7]);
 	}
 
 }

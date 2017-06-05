@@ -30,7 +30,7 @@ import java.util.List;
 @EnableBatchProcessing
 public class BatchConfiguration extends DefaultBatchConfigurer {
 
-	public static final String FULL_DATA_EXPORT_JOB_NAME = "endtbExports";
+	public static final String FULL_DATA_EXPORT_JOB_NAME = "bahmniExports";
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;

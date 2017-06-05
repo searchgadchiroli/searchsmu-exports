@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ ! -d /opt/bahmni-batch/conf ]; then
-    mkdir -p /opt/bahmni-batch/conf
+if [ ! -d /opt/bahmni-export/conf ]; then
+    mkdir -p /opt/bahmni-export/conf
 fi
 
 #create bahmni user and group if doesn't exist
@@ -15,26 +15,26 @@ groupadd bahmni
 [ $? -eq 1 ]
 useradd -g bahmni bahmni
 
-#create endtb_export directory if it does not exist
-if [ ! -d /home/bahmni/endtb_export ]; then
-    mkdir -p /home/bahmni/endtb_export
+#create bahmni_export directory if it does not exist
+if [ ! -d /home/bahmni/bahmni_export ]; then
+    mkdir -p /home/bahmni/bahmni_export
 fi
 
-if [ ! -d /opt/bahmni-batch/log/ ]; then
-    mkdir -p /opt/bahmni-batch/log/
+if [ ! -d /opt/bahmni-export/log/ ]; then
+    mkdir -p /opt/bahmni-export/log/
 fi
 
 #create links
-ln -s /opt/bahmni-batch/bin/bahmni-batch /usr/bin/bahmni-batch
-ln -s /opt/bahmni-batch/log /var/log/bahmni-batch
-ln -s /home/bahmni/endtb_export /opt/bahmni-batch/endtb_export
+ln -s /opt/bahmni-export/bin/bahmni-export /usr/bin/bahmni-export
+ln -s /opt/bahmni-export/log /var/log/bahmni-export
+ln -s /home/bahmni/bahmni_export /opt/bahmni-export/bahmni_export
 
 
 # permissions
-chown -R bahmni:bahmni /usr/bin/bahmni-batch
-chown -R bahmni:bahmni /opt/bahmni-batch
-chown -R bahmni:bahmni /var/log/bahmni-batch
-chown -R bahmni:bahmni /home/bahmni/endtb_export
+chown -R bahmni:bahmni /usr/bin/bahmni-export
+chown -R bahmni:bahmni /opt/bahmni-export
+chown -R bahmni:bahmni /var/log/bahmni-export
+chown -R bahmni:bahmni /home/bahmni/bahmni_export
 
 # adding cron job for scheduling the job at 11:30PM everyday
-crontab -u bahmni -l | { cat; echo "30 23 * * * /usr/bin/bahmni-batch >/dev/null 2>&1"; } | crontab -u bahmni -
+crontab -u bahmni -l | { cat; echo "30 23 * * * /usr/bin/bahmni-export >/dev/null 2>&1"; } | crontab -u bahmni -

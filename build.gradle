@@ -13,10 +13,10 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 
-group = 'org.bahmni.batch'
-version = '2.1.0'
+group = 'org.bahmni.export'
+version = '0.0.1'
 
-description = "Bahmni Batch for searchsmu exports"
+description = "Bahmni exports for SEARCH SMU"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -47,24 +47,24 @@ jar {
 }
 
 ospackage {
-    packageName = 'searchsmu-exports'
+    packageName = 'bahmni-export'
     release = System.getenv('GO_PIPELINE_COUNTER') ?: 1
     arch = NOARCH
     os = LINUX
     user = 'root'
 
-    into '/opt/bahmni-batch'
+    into '/opt/bahmni-export'
 
     from("${projectDir}/scripts/rpm/") {
         fileMode = 0755
         createDirectoryEntry = true
-        into '/opt/bahmni-batch/bin'
+        into '/opt/bahmni-export/bin'
     }
 
     from("${buildDir}/libs") {
         fileMode = 0755
         createDirectoryEntry = true
-        into "/opt/bahmni-batch/libs"
+        into "/opt/bahmni-export/libs"
     }
 }
 
