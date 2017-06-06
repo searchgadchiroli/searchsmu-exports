@@ -6,7 +6,7 @@
 This will create an rpm
 
 **To Install**
-> rpm -ivh <rpm>
+> rpm -ivh \<rpm\>
 
 **To run**
 > sudo su -s /bin/bash bahmni
