@@ -10,4 +10,5 @@ This will create an rpm
 
 **To run**
 > sudo su -s /bin/bash bahmni
+
 > bahmni-batch
