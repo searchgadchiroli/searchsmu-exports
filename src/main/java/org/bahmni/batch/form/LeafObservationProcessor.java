@@ -29,6 +29,8 @@ public class LeafObservationProcessor implements ItemProcessor<Patient, Patient>
 
     private BahmniForm form;
 
+    private DateRange dateRange;
+
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -52,11 +54,17 @@ public class LeafObservationProcessor implements ItemProcessor<Patient, Patient>
 	}
 
     private void updatePatientWithFormsFilled(Patient patient) throws Exception {
-        Map<String,Integer> params = new HashMap<>();
+        Map<String,Object> params = new HashMap<>();
         params.put("form_concept_id",form.getFormName().getId());
         params.put("person_id", patient.getPerson().getId());
+        params.put("start_date", this.dateRange.getStartDateString());
+        params.put("end_date", this.dateRange.getEndDateString());
 
         List<FormFilledForPatient> formsFilledForPatient = jdbcTemplate.query(formsFilledForPatientSql, params, new BeanPropertyRowMapper<>(FormFilledForPatient.class));
+        if(formsFilledForPatient.size() == 0){
+            System.out.println("Not a single instance of this form filled found for this patient");
+            System.exit(0);
+        }
         formsFilledForPatient = pickLatestFormInEveryVisit(formsFilledForPatient);
 
         for (FormFilledForPatient formFilledForPatient: formsFilledForPatient)
@@ -69,8 +77,9 @@ public class LeafObservationProcessor implements ItemProcessor<Patient, Patient>
             System.out.println("Getting obs filled for Form filled on "+formFilledForPatient.getVisit_date());
             List<Obs> obs = observationProcessor.process(map);
             formFilledForPatient.setObs(obs);
-            patient.setFormsFilled(formsFilledForPatient);
+
         }
+        patient.setFormsFilled(formsFilledForPatient);
 	}
 
     private List<FormFilledForPatient> pickLatestFormInEveryVisit(List<FormFilledForPatient> formsFilledForPatient) {
@@ -80,6 +89,10 @@ public class LeafObservationProcessor implements ItemProcessor<Patient, Patient>
 
     public void setForm(BahmniForm form) {
 		this.form = form;
+	}
+
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 
 	public void setJdbcTemplate(NamedParameterJdbcTemplate jdbcTemplate) {

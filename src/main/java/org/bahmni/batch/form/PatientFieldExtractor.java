@@ -36,6 +36,7 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 
 
 		int visit_number = 0;
+        System.out.println("Forms filled" +patient.getFormsFilled().size());
         for (FormFilledForPatient formFilledForPatient: patient.getFormsFilled()) {
             row.add(++visit_number);
             row.add(new SimpleDateFormat(DATE_FORMAT).format(formFilledForPatient.getVisit_date()));

@@ -8,12 +8,18 @@ import org.bahmni.batch.form.FormListProcessor;
 import org.bahmni.batch.form.domain.BahmniForm;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
+import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.FlowJobBuilder;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.scope.context.ChunkContext;
+import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,19 +42,7 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	private JobBuilderFactory jobBuilderFactory;
 
 	@Autowired
-	private TreatmentRegistrationBaseExportStep treatmentRegistrationBaseExportStep;
-
-	@Autowired
-	private TBDrugOrderBaseExportStep tbDrugOrderBaseExportStep;
-
-	@Autowired
-	private NonTBDrugOrderBaseExportStep nonTBDrugOrderBaseExportStep;
-
-	@Autowired
 	private FormListProcessor formListProcessor;
-
-	@Autowired
-	private ObjectFactory<ObservationExportStep> observationExportStepFactory;
 
 	@Autowired
 	private ObjectFactory<WideFormatObservationExportStep> wideFormatObservationExportStepFactory;
@@ -59,9 +53,6 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	@Autowired
 	public JobCompletionNotificationListener jobCompletionNotificationListener;
 
-	@Autowired
-	private MetaDataCodeDictionaryExportStep metaDataCodeDictionaryExportStep;
-
 	@Value("${zipFolder}")
 	private Resource zipFolder;
 
@@ -71,12 +62,14 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	@Autowired
 	private ReportGenerator reportGenerator;
 
+	@Autowired
+	StepBuilderFactory stepBuilders;
+
 	@Bean
 	public JobExecutionListener listener() {
 		return jobCompletionNotificationListener;
 	}
 
-	@Bean
 	public Job completeDataExport() throws IOException {
 
 		List<BahmniForm> forms = formListProcessor.retrieveAllForms();
@@ -84,7 +77,8 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 		FlowBuilder<FlowJobBuilder> completeDataExport = jobBuilderFactory.get(FULL_DATA_EXPORT_JOB_NAME)
 				.incrementer(new RunIdIncrementer()).preventRestart()
 				.listener(listener())
-		                .flow(treatmentRegistrationBaseExportStep.getStep());
+		                .flow(beforeStep());
+
 
 		for (BahmniForm form : forms) {
 				WideFormatObservationExportStep wideFormatObservationExportStep = wideFormatObservationExportStepFactory.getObject();
@@ -95,6 +89,21 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 		return completeDataExport.end().build();
 	}
 
+
+
+	public Step beforeStep() {
+		Tasklet tasklet = new Tasklet() {
+			@Override
+			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+				// TODO Auto-generated method stub
+				return RepeatStatus.FINISHED;
+			}
+		};
+
+		return stepBuilders.get("beforeStep")
+				.tasklet(tasklet)
+				.build();
+	}
 
 	@Bean
 	public freemarker.template.Configuration freeMarkerConfiguration() throws IOException {

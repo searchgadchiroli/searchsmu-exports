@@ -5,4 +5,5 @@ from obs
 where obs.concept_id = (:form_concept_id)
       and obs.voided = 0
       and visit.voided = 0
-      and obs.person_id = (:person_id);
+      and obs.person_id = (:person_id)
+      and date(visit.date_started) BETWEEN (:start_date) AND (:end_date);

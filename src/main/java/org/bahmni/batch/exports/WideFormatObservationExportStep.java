@@ -5,6 +5,7 @@ import org.bahmni.batch.form.LeafObservationProcessor;
 import org.bahmni.batch.form.ObservationProcessor;
 import org.bahmni.batch.form.PatientFieldExtractor;
 import org.bahmni.batch.form.domain.BahmniForm;
+import org.bahmni.batch.form.domain.DateRange;
 import org.bahmni.batch.form.domain.Patient;
 import org.bahmni.batch.form.domain.Person;
 import org.bahmni.batch.helper.FreeMarkerEvaluator;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,15 +50,15 @@ public class WideFormatObservationExportStep {
     public Resource outputFolder;
 
     @Autowired
-    private FreeMarkerEvaluator<BahmniForm> freeMarkerEvaluator;
+    private FreeMarkerEvaluator<Map<String,Object>> freeMarkerEvaluator;
 
     private BahmniForm form;
 
     @Autowired
-    private ObjectFactory<ObservationProcessor> observationProcessorFactory;
+    private ObjectFactory<LeafObservationProcessor> leafObservationProcessorObjectFactory;
 
     @Autowired
-    private ObjectFactory<LeafObservationProcessor> leafObservationProcessorObjectFactory;
+    private DateRange dateRange;
 
     public void setOutputFolder(Resource outputFolder) {
         this.outputFolder = outputFolder;
@@ -72,7 +74,11 @@ public class WideFormatObservationExportStep {
     }
 
     private JdbcCursorItemReader<Patient> obsReader() {
-        String sql = freeMarkerEvaluator.evaluate("patientsWithFormFilled.ftl",form);
+        Map<String, Object> input = new HashMap<>();
+        input.put("startDate", dateRange.getStartDateString());
+        input.put("endDate", dateRange.getEndDateString());
+        input.put("form", form);
+        String sql = freeMarkerEvaluator.evaluate("patientsWithFormFilled.ftl", input);
         System.out.println(sql);
         JdbcCursorItemReader<Patient> reader = new JdbcCursorItemReader<>();
         reader.setDataSource(dataSource);
@@ -94,6 +100,7 @@ public class WideFormatObservationExportStep {
 
         LeafObservationProcessor leafObservationProcessor = leafObservationProcessorObjectFactory.getObject();
         leafObservationProcessor.setForm(form);
+        leafObservationProcessor.setDateRange(dateRange);
         itemProcessors.add(leafObservationProcessor);
 
         compositeProcessor.setDelegates(itemProcessors);

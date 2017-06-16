@@ -8,8 +8,9 @@ from obs
 join person on obs.person_id = person.person_id
 join patient_identifier pid on person.person_id = pid.patient_id
 join person_name pn on pn.person_id = person.person_id
-where obs.concept_id = ${input.formName.id?c}
+where obs.concept_id = ${input["form"].formName.id?c}
 and obs.voided = 0
-and person.voided = 0;
+and person.voided = 0
+and date(obs_datetime) BETWEEN '${input["startDate"]}' AND '${input["endDate"]}';
 
 
