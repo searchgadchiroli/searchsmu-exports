@@ -6,6 +6,7 @@ import org.bahmni.batch.exception.BatchResourceException;
 import org.bahmni.batch.exports.*;
 import org.bahmni.batch.form.FormListProcessor;
 import org.bahmni.batch.form.domain.BahmniForm;
+import org.bahmni.batch.form.domain.DateRange;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.Step;
@@ -39,7 +40,7 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 	public static final String FULL_DATA_EXPORT_JOB_NAME = "bahmniExports";
 
 	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
+	private JobBuilderFactory jobBuilders;
 
 	@Autowired
 	private FormListProcessor formListProcessor;
@@ -70,11 +71,12 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 		return jobCompletionNotificationListener;
 	}
 
-	public Job completeDataExport() throws IOException {
+	public Job completeDataExport(DateRange dateRange){
 
+		System.out.println("Getting the Job");
 		List<BahmniForm> forms = formListProcessor.retrieveAllForms();
 
-		FlowBuilder<FlowJobBuilder> completeDataExport = jobBuilderFactory.get(FULL_DATA_EXPORT_JOB_NAME)
+		FlowBuilder<FlowJobBuilder> completeDataExport = jobBuilders.get(FULL_DATA_EXPORT_JOB_NAME)
 				.incrementer(new RunIdIncrementer()).preventRestart()
 				.listener(listener())
 		                .flow(beforeStep());
@@ -82,6 +84,7 @@ public class BatchConfiguration extends DefaultBatchConfigurer {
 
 		for (BahmniForm form : forms) {
 				WideFormatObservationExportStep wideFormatObservationExportStep = wideFormatObservationExportStepFactory.getObject();
+				wideFormatObservationExportStep.setDateRange(dateRange);
 				wideFormatObservationExportStep.setForm(form);
 				completeDataExport.next(wideFormatObservationExportStep.getStep());
 		}

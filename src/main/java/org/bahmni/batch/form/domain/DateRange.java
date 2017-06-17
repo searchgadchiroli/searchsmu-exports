@@ -9,13 +9,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@Component
 public class DateRange {
 
-    @Value("${startDate}")
     private String startDateString;
 
-    @Value("${endDate}")
     private String endDateString;
 
     public String getStartDateString(){
@@ -24,5 +21,13 @@ public class DateRange {
 
     public String getEndDateString(){
         return endDateString;
+    }
+
+    public void setStartDateString(String startDateString) {
+        this.startDateString = startDateString;
+    }
+
+    public void setEndDateString(String endDateString) {
+        this.endDateString = endDateString;
     }
 }

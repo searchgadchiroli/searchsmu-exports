@@ -57,7 +57,6 @@ public class WideFormatObservationExportStep {
     @Autowired
     private ObjectFactory<LeafObservationProcessor> leafObservationProcessorObjectFactory;
 
-    @Autowired
     private DateRange dateRange;
 
     public void setOutputFolder(Resource outputFolder) {
@@ -145,5 +144,9 @@ public class WideFormatObservationExportStep {
     public String getStepName() {
         String formName = form.getFormName().getName();
         return formName.substring(0,Math.min(formName.length(), 100));
+    }
+
+    public void setDateRange(DateRange dateRange) {
+        this.dateRange = dateRange;
     }
 }
