@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm /usr/bin/bahmni-export
+rm /etc/init.d/bahmni-export
 rm -rf /var/log/bahmni-export
 
 rm -rf /opt/bahmni-export

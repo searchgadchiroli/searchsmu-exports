@@ -1,7 +1,120 @@
 #!/bin/bash
+#
+# bahmni-export start/stop/status script
+#
+# chkconfig: 2345 65 35
+# description: bahmni-export server
+#
+### BEGIN INIT INFO
+# Required-Start: mysqld
+# Description: bahmni-export init script
+### END INIT INFO
 
-. /etc/bahmni-installer/bahmni.conf
+export BAHMNI_EXPORT_SERVER_USER=bahmni
+export BAHMNI_EXPORT_SERVER_RUN=/opt/bahmni-export/bin/start.sh
+export BAHMNI_EXPORT_SERVER_DEBUG=/opt/bahmni-export/bin/debug.sh
+export CUR_USER=`/usr/bin/whoami`
 
-echo "Running bahmni-export..."
-java -DOPENMRS_DB_SERVER=${OPENMRS_DB_SERVER} -DOPENMRS_DB_USER=${OPENMRS_DB_USERNAME} -DOPENMRS_DB_PASSWORD=${OPENMRS_DB_PASSWORD} -jar /opt/bahmni-export/libs/bahmni-export-*.jar >> /opt/bahmni-export/log/bahmni-export.log
-echo "Done"
+
+create_dirs() {
+    if [[ ! -e /var/run/bahmni-export ]]; then
+        ln -s /opt/bahmni-export/run /var/run/bahmni-export
+    fi
+
+    if [[ ! -e /var/run/bahmni-export/bahmni-export ]]; then
+        ln -s /opt/bahmni-export/bahmni-export /var/run/bahmni-export/bahmni-export
+    fi
+}
+
+bahmni-export_pid() {
+    echo `ps -fe | grep 'bahmni-export-0.0.1.jar' | grep -v grep | tr -s " "|cut -d" " -f2`
+}
+
+start() {
+    pid=$(bahmni-export_pid)
+    if [ -n "$pid" ]
+    then
+        echo -e "\e[00;31mService bahmni-export is already running (pid: $pid)\e[00m"
+    else
+        create_dirs
+        echo -e "\e[00;32mStarting bahmni-export \e[00m"
+        if [ `user_exists $BAHMNI_EXPORT__SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$BAHMNI_EXPORT_SERVER_USER" ] ;
+        then
+            su -s /bin/bash $BAHMNI_EXPORT_SERVER_USER $BAHMNI_EXPORT_SERVER_RUN
+        else
+            sh $BAHMNI_EXPORT_SERVER_RUN
+        fi
+  fi
+  exit 0
+}
+
+debug() {
+    pid=$(bahmni-export_pid)
+    if [ -n "$pid" ]
+    then
+        echo -e "\e[00;31mService bahmni-export is already running (pid: $pid)\e[00m"
+    else
+        create_dirs
+        echo -e "\e[00;32mStarting bahmni-export\e[00m"
+        if [ `user_exists $BAHMNI_EXPORT_SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$BAHMNI_EXPORT_SERVER_USER" ] ;
+        then
+            su -s /bin/bash $BAHMNI_EXPORT_SERVER_USER $BAHMNI_EXPORT_SERVER_DEBUG
+        else
+            sh $BAHMNI_EXPORT_SERVER_DEBUG
+        fi
+    fi
+  exit 0
+}
+
+
+status() {
+    pid=$(bahmni-export_pid)
+    if [ -n "$pid" ];
+    then
+        echo -e "\e[00;32mService bahmni-export is running with pid: $pid\e[00m"
+    exit 0
+    else
+        echo -e "\e[00;31mService bahmni-export is not running\e[00m"
+    exit 3
+    fi
+}
+
+stop() {
+	echo -e "\e[00;31mTerminating bahmni-export\e[00m"
+	kill -9 $(bahmni-export_pid)
+	rm -f /var/run/bahmni-export/bahmni-export.pid
+    return
+}
+user_exists(){
+    if id -u $1 >/dev/null 2>&1; then
+        echo "1"
+    else
+        echo "0"
+    fi
+}
+
+case $1 in
+	start)
+	  start
+	;;
+    debug)
+	  debug
+	;;
+	stop)
+	  stop
+	;;
+	restart)
+	  stop
+	  start
+	;;
+	status)
+		status
+	;;
+	kill)
+		stop
+	;;
+	*)
+
+	;;
+esac
+exit 0
