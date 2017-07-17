@@ -33,6 +33,9 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		row.add(patient.getPerson().getAge());
 		row.add(patient.getPerson().getBirthDate());
 		row.add(patient.getPerson().getGender());
+		row.add(patient.getPerson().getVillage());
+		row.add(patient.getPerson().getDistrict());
+		row.add(patient.getPerson().getState());
 
 
 		int visit_number = 0;
@@ -100,6 +103,9 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		sb.append(",").append("Patient Age");
 		sb.append(",").append("Patient Birth date");
 		sb.append(",").append("Patient Gender");
+		sb.append(",").append("Patient Village");
+		sb.append(",").append("Patient District");
+		sb.append(",").append("Patient State");
         for (int i = 0; i < form.getTotalVisitsFilledIn(); i++) {
             sb.append(",").append("visit_no");
             sb.append(",").append("visit_date");

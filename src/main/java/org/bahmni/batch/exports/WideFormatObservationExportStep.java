@@ -85,7 +85,8 @@ public class WideFormatObservationExportStep {
         reader.setRowMapper(new BeanPropertyRowMapper<Patient>(Patient.class){
             public Patient mapRow(ResultSet rs, int i) throws SQLException {
                 Patient patient = super.mapRow(rs,i);
-                Person person = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthDate"), rs.getInt("age"), rs.getString("gender"));
+                Person person = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthDate"), rs.getInt("age"),
+                        rs.getString("gender"), rs.getString("village"), rs.getString("district"), rs.getString("state"));
                 patient.setPerson(person);
                 return patient;
             }
