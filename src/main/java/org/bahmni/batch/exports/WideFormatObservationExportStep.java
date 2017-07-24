@@ -2,12 +2,8 @@ package org.bahmni.batch.exports;
 
 import org.bahmni.batch.exception.BatchResourceException;
 import org.bahmni.batch.form.LeafObservationProcessor;
-import org.bahmni.batch.form.ObservationProcessor;
 import org.bahmni.batch.form.PatientFieldExtractor;
-import org.bahmni.batch.form.domain.BahmniForm;
-import org.bahmni.batch.form.domain.DateRange;
-import org.bahmni.batch.form.domain.Patient;
-import org.bahmni.batch.form.domain.Person;
+import org.bahmni.batch.form.domain.*;
 import org.bahmni.batch.helper.FreeMarkerEvaluator;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
@@ -85,8 +81,9 @@ public class WideFormatObservationExportStep {
         reader.setRowMapper(new BeanPropertyRowMapper<Patient>(Patient.class){
             public Patient mapRow(ResultSet rs, int i) throws SQLException {
                 Patient patient = super.mapRow(rs,i);
+                Address address = new Address(rs.getString("village"), rs.getString("block"), rs.getString("tehsil"), rs.getString("district"));
                 Person person = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthDate"), rs.getInt("age"),
-                        rs.getString("gender"), rs.getString("village"), rs.getString("district"), rs.getString("state"));
+                        rs.getString("gender"), address);
                 patient.setPerson(person);
                 return patient;
             }

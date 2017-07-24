@@ -5,8 +5,9 @@ person.birthdate as birthDate,
 floor(datediff(CURDATE(), person.birthdate) / 365) AS age,
 person.gender gender,
 pa.city_village village,
-pa.county_district district ,
-pa.state_province state
+pa.address4 block,
+pa.address3 tehsil,
+pa.county_district district
 from obs
 join person on obs.person_id = person.person_id
 join patient_identifier pid on person.person_id = pid.patient_id

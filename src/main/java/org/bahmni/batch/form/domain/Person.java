@@ -8,23 +8,19 @@ public class Person {
     private Date birthDate;
     private Integer age;
     private String gender;
-    private String village;
-    private String district;
-    private String state;
+    private Address address;
 
     public Person(){
 
     }
 
-    public Person(Integer id, String name, Date birthDate, Integer age, String gender, String village, String district, String state) {
+    public Person(Integer id, String name, Date birthDate, Integer age, String gender, Address address) {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
         this.age = age;
         this.gender = gender;
-        this.village = village;
-        this.district = district;
-        this.state = state;
+        this.address = address;
     }
 
     public Integer getId() {
@@ -67,27 +63,7 @@ public class Person {
         this.birthDate = birthDate;
     }
 
-    public String getVillage() {
-        return village;
-    }
-
-    public void setVillage(String village) {
-        this.village = village;
-    }
-
-    public String getDistrict() {
-        return district;
-    }
-
-    public void setDistrict(String district) {
-        this.district = district;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
+    public Address getAddress() {
+        return address;
     }
 }

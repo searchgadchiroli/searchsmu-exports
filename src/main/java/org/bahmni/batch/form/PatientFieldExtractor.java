@@ -1,6 +1,7 @@
 package org.bahmni.batch.form;
 
 import org.bahmni.batch.form.domain.*;
+import org.bahmni.batch.helper.SMUVillageCodeMapping;
 import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.util.StringUtils;
@@ -9,9 +10,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileHeaderCallback{
 
@@ -33,9 +32,11 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		row.add(patient.getPerson().getAge());
 		row.add(patient.getPerson().getBirthDate());
 		row.add(patient.getPerson().getGender());
-		row.add(patient.getPerson().getVillage());
-		row.add(patient.getPerson().getDistrict());
-		row.add(patient.getPerson().getState());
+		row.add(patient.getPerson().getAddress().getVillage());
+		row.add(patient.getPerson().getAddress().getBlock());
+		row.add(patient.getPerson().getAddress().getTehsil());
+		row.add(patient.getPerson().getAddress().getDistrict());
+		row.add(SMUVillageCodeMapping.villageCodes.get(patient.getPerson().getAddress().getVillage()));
 
 
 		int visit_number = 0;
@@ -43,7 +44,6 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
         for (FormFilledForPatient formFilledForPatient: patient.getFormsFilled()) {
             row.add(++visit_number);
             row.add(new SimpleDateFormat(DATE_FORMAT).format(formFilledForPatient.getVisit_date()));
-            Map<String,String> obsRow = new HashMap<>();
             for (Concept field : form.getFields()){
                 if(field.isCoded()){
                     //TODO explore optimising this by having the same objects in both form and obs
@@ -104,8 +104,10 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		sb.append(",").append("Patient Birth date");
 		sb.append(",").append("Patient Gender");
 		sb.append(",").append("Patient Village");
+		sb.append(",").append("Patient Block");
+		sb.append(",").append("Patient Tehsil");
 		sb.append(",").append("Patient District");
-		sb.append(",").append("Patient State");
+		sb.append(",").append("Patient ncd_village_no");
         for (int i = 0; i < form.getTotalVisitsFilledIn(); i++) {
             sb.append(",").append("visit_no");
             sb.append(",").append("visit_date");
