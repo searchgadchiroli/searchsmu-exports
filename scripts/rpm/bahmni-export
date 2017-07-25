@@ -38,7 +38,7 @@ start() {
     else
         create_dirs
         echo -e "\e[00;32mStarting bahmni-export \e[00m"
-        if [ `user_exists $BAHMNI_EXPORT__SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$BAHMNI_EXPORT_SERVER_USER" ] ;
+        if [ `user_exists $BAHMNI_EXPORT_SERVER_USER` = "1" ]  && [ "$CUR_USER" != "$BAHMNI_EXPORT_SERVER_USER" ] ;
         then
             su -s /bin/bash $BAHMNI_EXPORT_SERVER_USER $BAHMNI_EXPORT_SERVER_RUN
         else
