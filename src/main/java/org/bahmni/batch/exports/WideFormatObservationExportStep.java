@@ -82,7 +82,7 @@ public class WideFormatObservationExportStep {
             public Patient mapRow(ResultSet rs, int i) throws SQLException {
                 Patient patient = super.mapRow(rs,i);
                 Address address = new Address(rs.getString("village"), rs.getString("block"), rs.getString("tehsil"), rs.getString("district"));
-                Person person = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthDate"), rs.getInt("age"),
+                Person person = new Person(rs.getInt("person_id"), rs.getString("name"), rs.getDate("birthDate"), rs.getDate("deathDate"), rs.getInt("age"),
                         rs.getString("gender"), address);
                 patient.setPerson(person);
                 return patient;

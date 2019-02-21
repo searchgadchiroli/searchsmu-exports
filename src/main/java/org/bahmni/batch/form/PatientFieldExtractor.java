@@ -14,7 +14,7 @@ import java.util.List;
 
 public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileHeaderCallback{
 
-    public static final String DATE_FORMAT = "dd/MMM/yyyy";
+    public static final String DATE_FORMAT = "dd-MM-yyyy";
     private BahmniForm form;
 
 	public PatientFieldExtractor(BahmniForm form){
@@ -30,7 +30,8 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		row.add(patient.getIdentifier());
 		row.add(patient.getPerson().getName());
 		row.add(patient.getPerson().getAge());
-		row.add(patient.getPerson().getBirthDate());
+		row.add(new SimpleDateFormat(DATE_FORMAT).format(patient.getPerson().getBirthDate()));
+		row.add(patient.getPerson().getDeathDate()!=null ? new SimpleDateFormat(DATE_FORMAT).format(patient.getPerson().getDeathDate()): null);
 		row.add(patient.getPerson().getGender());
 		row.add(patient.getPerson().getAddress().getVillage());
 		row.add(patient.getPerson().getAddress().getBlock());
@@ -102,6 +103,7 @@ public class PatientFieldExtractor implements FieldExtractor<Patient>, FlatFileH
 		sb.append(",").append("Patient Name");
 		sb.append(",").append("Patient Age");
 		sb.append(",").append("Patient Birth date");
+		sb.append(",").append("Patient Death date");
 		sb.append(",").append("Patient Gender");
 		sb.append(",").append("Patient Village");
 		sb.append(",").append("Patient Block");

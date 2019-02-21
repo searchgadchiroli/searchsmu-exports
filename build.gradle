@@ -14,7 +14,7 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 
 group = 'org.bahmni.export'
-version = '0.0.2'
+version = '0.0.3'
 
 description = "Bahmni exports for SEARCH SMU"
 

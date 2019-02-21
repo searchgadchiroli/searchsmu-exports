@@ -8,7 +8,7 @@ select
   encounter.visit_id as visit_id,
   o.concept_id as conceptId,
        o.obs_id as id,
-       coalesce(DATE_FORMAT(o.value_datetime, '%d/%b/%Y'),o.value_numeric,o.value_text,o.value_coded) as value,
+       coalesce(DATE_FORMAT(o.value_datetime, '%d-%m-%Y'),o.value_numeric,o.value_text,o.value_coded) as value,
        obs_con.concept_full_name as conceptName
 from obs o
   join person on o.person_id = person.person_id

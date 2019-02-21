@@ -9,15 +9,17 @@ public class Person {
     private Integer age;
     private String gender;
     private Address address;
+    private Date deathDate;
 
     public Person(){
 
     }
 
-    public Person(Integer id, String name, Date birthDate, Integer age, String gender, Address address) {
+    public Person(Integer id, String name, Date birthDate, Date deathDate, Integer age, String gender, Address address) {
         this.id = id;
         this.name = name;
         this.birthDate = birthDate;
+        this.deathDate = deathDate;
         this.age = age;
         this.gender = gender;
         this.address = address;
@@ -65,5 +67,13 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public Date getDeathDate() {
+        return deathDate;
+    }
+
+    public void setDeathDate(Date deathDate) {
+        this.deathDate = deathDate;
     }
 }
